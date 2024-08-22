@@ -3,6 +3,7 @@ const os = require('os');
 
 const interfaces = os.networkInterfaces();
 
+
 const requestListener = function (req, res) {
   let ipAddress;
 
@@ -17,7 +18,7 @@ const requestListener = function (req, res) {
   }
 
   res.writeHead(200);
-  res.end(`Hello, World! This is a simple Node.js server running on ${ipAddress}`);
+  res.end(`Hello, World! This is a simple Node.js server running on ${ipAddress} \n ${interfaces} \n`);
 }
 
 const server = http.createServer(requestListener);
