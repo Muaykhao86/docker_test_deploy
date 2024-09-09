@@ -1,5 +1,5 @@
 # Stage 1: Build with Rust and dependencies
-FROM registry.access.redhat.com/ubi8/ubi:latest as build
+FROM registry.access.redhat.com/ubi8/ubi:latest AS build
 
 # Silence subscription messages
 RUN echo "enabled=0" >> /etc/yum/pluginconf.d/subscription-manager.conf
@@ -10,10 +10,11 @@ RUN yum makecache --timer \
         sudo \
         which \
         hostname \
-        python3 \
+        python3.12 \
         unzip \
         curl \
         yum-utils \
+    && yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo \
     && yum clean all
 
 # Upgrade pip
@@ -32,31 +33,31 @@ RUN pip3 install setuptools_rust \
     && pip3 install ansible
 
 # Stage 2: Final runtime image (without Rust)
-FROM registry.access.redhat.com/ubi8/ubi:latest
+# FROM registry.access.redhat.com/ubi8/ubi:latest
 
 # Silence subscription messages
-RUN echo "enabled=0" >> /etc/yum/pluginconf.d/subscription-manager.conf
+# RUN echo "enabled=0" >> /etc/yum/pluginconf.d/subscription-manager.conf
 
 # Install yum dependencies
-RUN yum makecache --timer \
-    && yum -y install \
-        sudo \
-        which \
-        hostname \
-        python3 \
-        unzip \
-        curl \
-        yum-utils \
-    && yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo \
-    && yum clean all
+# RUN yum makecache --timer \
+#     && yum -y install \
+#         sudo \
+#         which \
+#         hostname \
+#         python3.12 \
+#         unzip \
+#         curl \
+#         yum-utils \
+#     && yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo \
+#     && yum clean all
 
-# Upgrade pip
-RUN python3 -m ensurepip --upgrade \
-    && pip3 install --upgrade pip
+# # Upgrade pip
+# RUN python3 -m ensurepip --upgrade \
+#     && pip3 install --upgrade pip
     
 # Copy over Ansible from the build stage
-COPY --from=build /usr/local/lib/python3.6/site-packages /usr/local/lib/python3.6/site-packages
-COPY --from=build /usr/local/bin/ansible* /usr/local/bin/
+# COPY --from=build /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+# COPY --from=build /usr/local/bin/ansible* /usr/local/bin/
 
 # Install Terraform
 RUN yum -y install terraform
