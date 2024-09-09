@@ -17,7 +17,8 @@ RUN yum makecache --timer \
     && yum clean all
 
 # Upgrade pip
-RUN python3 -m ensurepip --upgrade
+RUN python3 -m ensurepip --upgrade \
+    && pip3 install --upgrade pip
 
 # Install rustup (to get a complete Rust toolchain including cargo)
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -50,8 +51,9 @@ RUN yum makecache --timer \
     && yum clean all
 
 # Upgrade pip
-RUN python3 -m ensurepip --upgrade
-
+RUN python3 -m ensurepip --upgrade \
+    && pip3 install --upgrade pip
+    
 # Copy over Ansible from the build stage
 COPY --from=build /usr/local/lib/python3.6/site-packages /usr/local/lib/python3.6/site-packages
 COPY --from=build /usr/local/bin/ansible* /usr/local/bin/
