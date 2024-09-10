@@ -10,7 +10,7 @@ ENV PATH=$PATH:/google-cloud-sdk/bin
 RUN echo "enabled=0" >> /etc/yum/pluginconf.d/subscription-manager.conf
 
 # Install system packages, core dependencies, and clean up unnecessary services for systemd
-RUN yum makecache fast \
+RUN yum makecache --timer \
     && yum -y update \
     && yum -y install \
         sudo \
@@ -58,7 +58,7 @@ RUN curl -O "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-c
 
 # Install Azure CLI via Microsoft repository
 RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc \
-    && yum-config-manager --add-repo https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.repo \
+    && yum -y install https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm \
     && yum -y install azure-cli \
     && yum clean all
 
@@ -72,8 +72,11 @@ RUN rm -rf /var/cache/yum /tmp/* /var/tmp/* /google-cloud-sdk/.install
 # Set working directory
 WORKDIR /workspace
 
+# ? Note sure if either of these are necessary
 # Volume for systemd
-VOLUME ["/sys/fs/cgroup"]
+# VOLUME ["/sys/fs/cgroup"]
+# Disable requiretty.
+# RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
 # Default CMD to run systemd
 CMD ["/usr/lib/systemd/systemd"]
