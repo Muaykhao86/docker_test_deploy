@@ -80,7 +80,7 @@ RUN rm -rf /var/cache/yum /tmp/* /var/tmp/* /google-cloud-sdk/.install
 WORKDIR /workspace
 
 # Volume for systemd
-VOLUME ["/sys/fs/cgroup"]
+# VOLUME ["/sys/fs/cgroup"]
 
 # Start systemd by default.
 CMD ["/usr/lib/systemd/systemd"]
